@@ -26,10 +26,9 @@ const authenticateToken = async(req,res,next)=>{
             res.status(401).json({message: 'user not found'});
 
         }
-        console.log(" ssssssssss \n\n"+user);
         req.user = user;
+        console.log(user);
         next();
-        console.log(" ssssssssssghhhghg \n\n"+user);
     }catch(error){
         res.status(401).json({message: 'Invalid Token',error});
 
