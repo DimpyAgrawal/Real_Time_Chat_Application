@@ -52,10 +52,13 @@ router.get("/accessChat/:userId", Authentication,async (req, res) => {
         };
         //store  it in the database
 
-        const createdChat = await Chat.create(chatData);
-            const fullChat = await Chat.findOne({ _id: createdChat._id }).populate("users", "-password");
+        try{
+
+            const createdChat = await Chat.create(chatData);
+            // now sending the chat data to the user which is created now
+
+            const fullChat = await Chat.findOne({_is:createdChat._id}).populate("users","-password");
             res.status(200).send(fullChat);
-    }
 
         }catch(error){
             res.status(400).json({message:error})

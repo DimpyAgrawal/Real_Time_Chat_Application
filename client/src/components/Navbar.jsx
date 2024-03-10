@@ -1,59 +1,45 @@
 import React, { useEffect, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
+import logo from '../assets/logo1.png'
 
-export default function Navbar() {
-  const navigate = useNavigate()
+function Nav_bar() {
+    const navigate = useNavigate()
   const [openOptionMobile, setOpenOptionMobile] = useState(false);
   const isLogin = localStorage.getItem('loggedin');
   useEffect(() => {
     console.log(isLogin);
   }, [isLogin]);
+
   return (
-    <>
-
-
-      <div className='flex w-full h-[8vh] bg-gray-700 text-white justify-end'>
-        {/* Desktop Navigation */}
-        <div className='hidden md:flex gap-4 mr-[2%] mt-3'>
-          {console.log(isLogin)}
-          {isLogin ? (
+    <div>
+      <header class="text-gray-600 body-font">
+  <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
+    <a class="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
+      <img src={logo} alt="Logo" className='h-9' />
+      <span class="ml-3 text-xl">Chaty-Fy</span>
+    </a>
+    <nav class="md:ml-auto md:mr-auto flex flex-wrap items-center text-base justify-center">
+      {isLogin ? (
             <>
-            <NavLink to='/'>Home</NavLink>
-            <div className='cursor-pointer' onClick={() => { localStorage.clear(); navigate('/signin'); }}>Logout</div>
+            <div className='mr-5 hover:text-gray-90 cursor-pointer'><NavLink to='/'>Home</NavLink></div> 
+            <div className='mr-5 hover:text-gray-90 cursor-pointer' onClick={() => { localStorage.clear(); navigate('/signin'); }}>Logout</div>
             </>
           ) : (
             <>
-            <NavLink to='/signin'>LogIn</NavLink>
-            <NavLink to='/signup'>SignUp</NavLink>
+            <div className='mr-5 hover:text-gray-90 cursor-pointer'><NavLink to='/signin'>LogIn</NavLink></div> 
+            <div className='mr-5 hover:text-gray-90 cursor-pointer'><NavLink to='/signup'>SignUp</NavLink></div>
             </>
           )}
-        </div>
-
-        {/* Mobile Navigation */}
-        <div className='md:hidden mt-4 mr-[2%]'>
-          {openOptionMobile ? (
-            <div>
-              <span onClick={() => setOpenOptionMobile(false)} className="material-symbols-outlined">
-                Close
-              </span>
-              <div className='flex  m-auto flex-col text-black bg-white mt-[5%]  w-[30vw]  p-[8%] text-xl pl-[30%]'>
-                <NavLink to='/'>Home</NavLink>
-                <NavLink to='/signin'>LogIn</NavLink>
-                <NavLink to='/signup'>SignUp</NavLink>
-              </div>
-            </div>
-          ) : (
-            <span onClick={() => setOpenOptionMobile(true)} className="material-symbols-outlined">
-              Menu
-            </span>
-          )}
-        </div>
-      </div>
-
-
-
-
-
-    </>
+    </nav>
+    {/* <button class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Button
+      <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
+        <path d="M5 12h14M12 5l7 7-7 7"></path>
+      </svg>
+    </button> */}
+  </div>
+</header>
+    </div>
   )
 }
+
+export default Nav_bar
