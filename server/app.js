@@ -5,8 +5,10 @@ const cors = require('cors');
 const app = express();
 const path = require('path');
 const router =  require('./router/route');
+
 const chatRoutes = require('./router/chatRoutes');
-// const todo_routes = require('./routers/todo_Routes');
+
+
 dotenv.config();
 
 
@@ -16,20 +18,23 @@ app.use(cors({credentials: true}));
 
 const port  = process.env.PORT||8080;
 
-// mongoose.connect(`mongodb://localhost:27017`)
+
+
+mongoose.connect('mongodb://127.0.0.1:27017/Anjali')
+.then(()=>{
+     console.log("DB Connected");
+})
+.catch((err)=>{
+     console.log(err);
+})
+
+
+// mongoose.connect(`mongodb+srv://dimpy:${process.env.DB_PASSWORD}@cluster0.glj5682.mongodb.net/?retryWrites=true&w=majority`)
 // .then(()=>{
 //     console.log('database is connected');
 // }).catch(err =>{
 //     console.log('Connection error', err.message);
 // })
-
-
-mongoose.connect(`mongodb+srv://dimpy:${process.env.DB_PASSWORD}@cluster0.glj5682.mongodb.net/?retryWrites=true&w=majority`)
-.then(()=>{
-    console.log('database is connected');
-}).catch(err =>{
-    console.log('Connection error', err.message);
-})
 
 
 app.use('/',router);

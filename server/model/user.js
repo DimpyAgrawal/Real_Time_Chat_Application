@@ -20,4 +20,6 @@ const mongoose = require('mongoose');
     },
  },{timestamps : true});
 
- module.exports = mongoose.model("userCHAT",userSchema);
+const UserChat = mongoose.model('userChat', userSchema);
+
+module.exports = UserChat;
