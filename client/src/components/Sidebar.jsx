@@ -1,17 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import ChatSide from "./ChatSide";
 import { IoIosVideocam } from "react-icons/io";
-import { GiThreeFriends } from "react-icons/gi";
+
 import { MdPersonAddAlt1 } from "react-icons/md";
 import { MdPersonSearch } from "react-icons/md";
 import { HiMiniUserGroup } from "react-icons/hi2";
-// import Chat from "./dash compo/chat";
-// import Chatfull from "./dash compo/chatfull";
-// import Change from "./dash compo/Change";
-// import Calender from "./dash compo/calender";
-// import Meetings from "./dash compo/meetings";
-// import Settings from "./dash compo/settings";
-// import Dashboard from "./dash compo/dashboard";
+
 const Sidebar = () => {
     const profileRef = useRef()
     const [isProfileActive, setIsProfileActive]=useState(false)
