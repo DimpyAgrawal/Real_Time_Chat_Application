@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import ChatSide from "./ChatSide";
 import { IoIosVideocam } from "react-icons/io";
-// import { GiThreeFriends } from "react-icons/gi";
+
 import { MdPersonAddAlt1 } from "react-icons/md";
 import { MdPersonSearch } from "react-icons/md";
 import { HiMiniUserGroup } from "react-icons/hi2";
