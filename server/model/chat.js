@@ -20,7 +20,7 @@ const chatSchema = new mongoose.Schema({
         default: false   
     },
     users:[{
-        type:ObjectId,
+        type:ObjectId,  // only contains id
         ref: "User",
     }],
     lastestMessage:{

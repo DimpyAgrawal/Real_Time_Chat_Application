@@ -6,6 +6,9 @@ const app = express();
 const path = require('path');
 const router =  require('./router/route');
 
+const chatRoutes = require('./router/chatRoutes');
+
+
 dotenv.config();
 
 
@@ -35,7 +38,8 @@ mongoose.connect('mongodb://127.0.0.1:27017/Anjali')
 
 
 app.use('/',router);
-// app.use('/todo',todo_routes);
+app.use('/chats',chatRoutes);
+// app.use('/todo',toutes);
  
 app.listen(port,()=>{
     console.log(`server is running on port ${port}`);
