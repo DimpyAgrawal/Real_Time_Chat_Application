@@ -1,9 +1,14 @@
 import React from 'react'
+import Sidebar from './Sidebar'
+import ChatSide from './ChatSide'
 
-export default function Home() {
+const Home = () => {
   return (
     <div>
-      home
+      <Sidebar></Sidebar>
+      {/* <ChatSide/> */}
     </div>
   )
 }
+
+export default Home
