@@ -81,7 +81,99 @@ router.get("/allUsers",Authentication,async(req,res)=>{
         res.status(400).json({message:"error in the allusers api"+error})
     }
 
-})
+});
+
+router.post('/send_request', async (req, res) => {
+    const { recId , senderId } = req.body;
+    console.log(recId, senderId);
+    try {
+        const receiver = await User.findOne({ _id: recId });
+        const sender = await User.findOne({ _id: senderId });
+        if (!receiver || !sender) {
+            return res.status(404).send("One or more users not found!");
+        }
+        receiver.friend_request.push(senderId);
+        await receiver.save();
+
+        res.status(200).send("Friend request sent successfully!");
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal server error");
+    }
+});
+
+
+router.post('/accept_request', async(req, res) => {
+    const { recId, senderId } = req.body;
+    try {
+        const receiver = await User.findOne({ _id: recId });
+        const sender = await User.findOne({ _id: senderId });
+        if (!receiver || !sender) {
+            return res.status(404).send("One or more users not found!");
+        }
+        receiver.friend_list.push(senderId);
+        sender.friend_list.push(recId);
+
+        receiver.friend_request.pull(senderId);
+        
+        await receiver.save();
+        await sender.save();
+
+        res.status(200).send("Friend request accepted successfully!");
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal server error");
+    }
+});
+
+router.post('/delete_request', async(req, res) => {
+    const { recId, senderId } = req.body;
+    try {
+        const receiver = await User.findOne({ _id: recId });
+        const sender = await User.findOne({ _id: senderId });
+        if (!receiver || !sender) {
+            return res.status(404).send("One or more users not found!");
+        }
+
+        receiver.friend_request.pull(senderId);
+        
+        await receiver.save();
+
+        res.status(200).send("Friend request deleted successfully!");
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal server error");
+    }
+});
+
+
+router.post('/unfriend', async(req, res) => {
+    const { recId, senderId } = req.body;
+    try {
+        const receiver = await User.findOne({ _id: recId });
+        const sender = await User.findOne({ _id: senderId });
+        if (!receiver || !sender) {
+            return res.status(404).send("One or more users not found!");
+        }
+        
+        sender.friend_list.pull(recId);
+        receiver.friend_list.pull(senderId);
+        
+        await receiver.save();
+        await sender.save();
+
+        res.status(200).send("Now you both are no longer friends!");
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal server error");
+    }
+});
+
+
+
+
+
+
 
 
 
