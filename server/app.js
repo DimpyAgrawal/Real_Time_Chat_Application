@@ -5,6 +5,7 @@ const cors = require('cors');
 const app = express();
 const path = require('path');
 const router =  require('./router/route');
+const chatRoutes = require('./router/chatRoutes');
 // const todo_routes = require('./routers/todo_Routes');
 dotenv.config();
 
@@ -32,7 +33,8 @@ mongoose.connect(`mongodb+srv://dimpy:${process.env.DB_PASSWORD}@cluster0.glj568
 
 
 app.use('/',router);
-// app.use('/todo',todo_routes);
+app.use('/chats',chatRoutes);
+// app.use('/todo',toutes);
  
 app.listen(port,()=>{
     console.log(`server is running on port ${port}`);
