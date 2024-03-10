@@ -6,7 +6,7 @@ const {ObjectId} = mongoose.Schema.Types;
 const messageSchema = new mongoose.Schema({
     sender :{
         type: ObjectId,
-        ref:"User"
+        ref:"userChat"
     },
     content:{
         type: String,
@@ -14,7 +14,7 @@ const messageSchema = new mongoose.Schema({
     },
     chat:{
         type: ObjectId,
-        ref: "Chat"
+        ref: "chatSchema"
     }
 
 },{timestamps:true})
