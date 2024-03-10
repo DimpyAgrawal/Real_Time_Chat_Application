@@ -48,7 +48,7 @@ export default function SignIn() {
    
 
 
-<div className='flex flex-col w-[100%] h-[96vh] bg-slate-200'  >
+<div className='flex flex-col w-[100%] h-[96vh] '  >
         <div  className='flex w-[60%] h-[70%]  bg-white shadow-2xl m-auto p-8 rounded-md'>
           <div className='w-[100%] md:w-[50%] m-auto  mt-0  '>
             <div className=' w-[100%] md:w-[90%]  '>

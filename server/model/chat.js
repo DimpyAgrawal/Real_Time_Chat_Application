@@ -21,15 +21,15 @@ const chatSchema = new mongoose.Schema({
     },
     users:[{
         type:ObjectId,  // only contains id
-        ref: "User",
+        ref: "userChat",
     }],
     lastestMessage:{
         type:ObjectId,
-        ref: "Message",
+        ref: "messageSchema",
     },
     groupAdmin:{
         type: ObjectId,
-        ref:"User",
+        ref:"userChat",
     }
 
 },{timestamps:true});
