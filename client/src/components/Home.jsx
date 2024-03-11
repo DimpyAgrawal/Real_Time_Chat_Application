@@ -5,8 +5,7 @@ import ChatSide from './ChatSide'
 const Home = () => {
   return (
     <div>
-      <Sidebar></Sidebar>
-      {/* <ChatSide/> */}
+       <Sidebar></Sidebar>
     </div>
   )
 }
