@@ -5,6 +5,7 @@ import SignUp from './components/SignUp'
 import Home from './components/Home'
 import Navbar from './components/Navbar';
 import { ToastContainer } from 'react-toastify'
+import Landing_page from './components/Landing_page'
 
 export default function App() {
   return (
@@ -13,7 +14,8 @@ export default function App() {
         {/* <Navbar /> */}
 
         <Routes>
-          <Route exact path='/' element={<Home />} />
+          <Route exact path='/' element={<Landing_page />} />
+          <Route exact path='/home' element={<Home/>} />
           <Route exact path='/signin' element={<SignIn />} />
           <Route exact path='/signup' element={<SignUp />} />
 

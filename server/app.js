@@ -25,21 +25,21 @@ const port  = process.env.PORT||8080;
 
 
 
-// mongoose.connect('mongodb://127.0.0.1:27017/Anjali')
-// .then(()=>{
-//      console.log("DB Connected");
-// })
-// .catch((err)=>{
-//      console.log(err);
-// })
-
-
-mongoose.connect(`mongodb+srv://dimpy:${process.env.DB_PASSWORD}@cluster0.glj5682.mongodb.net/?retryWrites=true&w=majority`)
+mongoose.connect('mongodb://127.0.0.1:27017/Anjali')
 .then(()=>{
-    console.log('database is connected');
-}).catch(err =>{
-    console.log('Connection error', err.message);
+     console.log("DB Connected");
 })
+.catch((err)=>{
+     console.log(err);
+})
+
+
+// mongoose.connect(`mongodb+srv://dimpy:${process.env.DB_PASSWORD}@cluster0.glj5682.mongodb.net/?retryWrites=true&w=majority`)
+// .then(()=>{
+//     console.log('database is connected');
+// }).catch(err =>{
+//     console.log('Connection error', err.message);
+// })
 
 
 app.use('/',router);
