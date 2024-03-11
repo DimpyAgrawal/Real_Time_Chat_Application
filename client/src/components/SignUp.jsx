@@ -7,7 +7,6 @@ export default function SignUp() {
 
   const notify1 = () => toast.success("SignUp successfully");
   const notify2 = (msg) => toast.info(msg);
-  const notify4 = (msg) => toast.error(msg);
   const initialValue = {
     name: '',
     email: '',
@@ -21,19 +20,35 @@ export default function SignUp() {
   const onChangeValue = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value })
   }
-
+  
   const onHandleSubmit = (e) => {
     e.preventDefault();
+    if (!userData.name || !userData.email || !userData.password) {
+      notify2("Please fill in all the details");
+      return;
+    }
     axios.post('http://localhost:8080/register', userData)
       .then(response => {
         console.log(response.data);
-      }).catch(error => {
-        notify2();
-        console.log("error" + " " + error);
+        notify1();
+        navigate('/signin');
       })
-    notify1();
-    navigate('/signin');
-  }
+      .catch(error => {
+        if (error.response && error.response.data) {
+          if (error.response.data.includes("User already exists")) {
+            notify2("User with this email already exists");
+          }  else {
+            notify2("An error occurred while registering");
+          }
+        } else if (error.request) {
+          notify2("No response received from the server");
+        } else {
+          notify2("Error occurred during request setup");
+        }
+        console.error("Error:", error);
+      });
+  };
+  
 
   return (
 

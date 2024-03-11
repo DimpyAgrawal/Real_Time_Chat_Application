@@ -6,9 +6,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function SignIn() {
-  const notify1 =()=>toast.success('SignIn Successfully');
-  const notify2 =(msg)=>toast.info(msg);
-  const notify3 =(msg)=>toast.error(msg);
+  const notify1 = () => toast.success('Sign in successful');
+  const notify3 = (msg) => toast.error(msg);
   const initialValue={
     email:'',
     password:''
@@ -22,28 +21,48 @@ export default function SignIn() {
     setUserData({...userData,[e.target.name]:e.target.value})
   }
 
-  const onHandleSubmit=(e)=>{
-    axios.post('http://localhost:8080/login',userData)
-    .then(response=>{
-      console.log(response.data);
-      const{name,email,id} = jwt_decode(response.data.data);
-      // window.location.reload();
-      localStorage.setItem('token',response.data.data);
-      localStorage.setItem('id',id);
-      localStorage.setItem('name',name);
-      localStorage.setItem('email',email);
-      localStorage.setItem('loggedin',true);
-      notify1();
-      navigate('/');
+  const onHandleSubmit = (e) => {
+    e.preventDefault();
+    if (!userData.email || !userData.password) {
+      notify3("Please fill in all the details");
+      return;
+    }
 
-      console.log('login');
-    }).catch(error=>{
-      notify3();
-      console.log('not login');
-      console.log('error ',error);
-    })
-  }
+    axios.post('http://localhost:8080/login', userData)
+      .then(response => {
+        console.log(response.data);
+        const { name, email, id } = jwt_decode(response.data.data);
+        localStorage.setItem('token', response.data.data);
+        localStorage.setItem('id', id);
+        localStorage.setItem('name', name);
+        localStorage.setItem('email', email);
+        localStorage.setItem('loggedin', true);
+        notify1();
+        navigate('/');
+      })
+      .catch(error => {
+        console.log(error.response);
+        if (error.response && error.response.data) {
+          if (error.response.data.includes("Password does not match")) {
+            notify3("Password does not match");
+          }
+          else if (error.response.data.includes("User does not exist")) {
+            notify3("User does not exist");
+          }  
+          else {
+            notify3("An error occurred while login");
+          }
+        } else if (error.request) {
+          notify3("No response received from the server");
+        } else {
+          notify3("An error occurred while login");
+        }
+        console.error("Error:", error);
+      });
+  };
+  
 
+  
   return (
    
 
