@@ -10,12 +10,14 @@ export default function App() {
   return (
     <>
       <BrowserRouter>
-        <Navbar />
-        <Routes>
-          <Route exact path='/' element={<Home />} />
+      <Routes>
+          <Route exact path='/' element={<Landing_page />} />
+          <Route exact path='/home' element={<Home/>} />
           <Route exact path='/signin' element={<SignIn />} />
           <Route exact path='/signup' element={<SignUp />} />
-          
+          <Route exact path='/dashboard' element={<Dashboard />} />
+          {/* <Route exact path='/profilepage' element={<ProfilePage />} /> */}
+
         </Routes>
       </BrowserRouter>
       <ToastContainer />
