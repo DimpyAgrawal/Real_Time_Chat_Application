@@ -4,6 +4,8 @@ import SignIn from './components/SignIn'
 import SignUp from './components/SignUp'
 import Home from './components/Home'
 import Navbar from './components/Navbar';
+import Dashboard from './components/Dashboard'
+import ProfilePage from './components/ProfilePage'
 import { ToastContainer } from 'react-toastify'
 import Landing_page from './components/Landing_page'
 
@@ -18,6 +20,8 @@ export default function App() {
           <Route exact path='/home' element={<Home/>} />
           <Route exact path='/signin' element={<SignIn />} />
           <Route exact path='/signup' element={<SignUp />} />
+          <Route exact path='/dashboard' element={<Dashboard />} />
+          {/* <Route exact path='/profilepage' element={<ProfilePage />} /> */}
 
         </Routes>
       </BrowserRouter>

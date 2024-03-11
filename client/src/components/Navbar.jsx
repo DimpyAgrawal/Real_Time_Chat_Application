@@ -22,6 +22,7 @@ function Nav_bar() {
       {isLogin ? (
             <>
             <div className='mr-5 hover:text-gray-90 cursor-pointer'><NavLink to='/'>Home</NavLink></div> 
+            <div className='mr-5 hover:text-gray-90 cursor-pointer'><NavLink to='/dashboard'>DashBoard</NavLink></div> 
             <div className='mr-5 hover:text-gray-90 cursor-pointer' onClick={() => { localStorage.clear(); navigate('/signin'); }}>Logout</div>
             </>
           ) : (
