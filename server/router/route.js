@@ -11,13 +11,20 @@ router.use(bodyParser.json());
 
 router.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
+    
+    console.log(name + " " + email + " " + password);
     if (!name || !email || !password) {
-        return res.status(400).json({ msg: "Please fill all the details", name, email, pass });
+        return res.send({ error: "Fill Complete details" });
     }
+    const encryptedPassword = await bcrypt.hash(password, 10);
     try {
-        const pre_exist = await User.findOne({ email  });
-        if (pre_exist) {
-            return res.status(400).send("User already exists");
+        console.log(name + " " + email + " " + password);
+
+        const oldUser = await User.findOne({ email });
+
+        
+        if (oldUser) {
+            return res.json({ error: "User Exists" });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await User.create({

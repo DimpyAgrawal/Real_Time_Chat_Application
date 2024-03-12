@@ -12,6 +12,7 @@ require('./model/user');
 const router =  require('./router/route');
 
 const chatRoutes = require('./router/chatRoutes');
+const messageRoutes = require('./router/messageRoutes');
 
 
 dotenv.config();
@@ -44,11 +45,22 @@ mongoose.connect('mongodb://127.0.0.1:27017/Anjali')
 
 app.use('/',router);
 app.use('/chats',chatRoutes);
-// app.use('/todo',toutes);
+app.use('/message',messageRoutes);
  
-app.listen(port,()=>{
+const server = app.listen(port,()=>{
     console.log(`server is running on port ${port}`);
    
 })
 
+const io = require("socket.io")(server,{
+    pingTimeout: 60000,
+    cors:{
+        origin: "https://localhost:3000",
+    },
+});
+
+io.on("connection",(socket)=>{
+    console.log("connected to socket.io");
+
+});
 
