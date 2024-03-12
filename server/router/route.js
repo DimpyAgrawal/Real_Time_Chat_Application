@@ -18,7 +18,7 @@ router.post("/register",async (req, res) => {
     console.log("register"); 
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
-        return res.send({ error: "Fill Complete details" })
+        return res.send({ error: "Fill Complete details" });
     }
     console.log(name + " " + email + " " + password);
 
