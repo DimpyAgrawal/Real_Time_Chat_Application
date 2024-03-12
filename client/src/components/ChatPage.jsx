@@ -6,12 +6,12 @@ import ChatBox from './ChatBox';
 
 
 export default function ChatPage() {
-    const{ user } = ChatState();
+    // const{ user } = ChatState();
   return (
     <div>
-        {user && <SideDrawer/>}
-        {user && <MyChats/>}
-        {user && <ChatBox/>}
+    {/* //     {user && <SideDrawer/>}
+    //     {user && <MyChats/>}
+    //     {user && <ChatBox/>} */}
       
     </div>
   )
