@@ -9,9 +9,9 @@ export default function ChatPage() {
     const{ user } = ChatState();
   return (
     <div>
-        {/* {user && <SideDrawer/>}
+        {user && <SideDrawer/>}
         {user && <MyChats/>}
-        {user && <ChatBox/>} */}
+        {user && <ChatBox/>}
       
     </div>
   )
