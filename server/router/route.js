@@ -1,86 +1,67 @@
 const express = require('express');
-
 const app = express();
-const router = express.Router();
-const bcrypt  =  require('bcrypt');
-const User  = require('../model/user');
+const router  = express.Router();
+const bcrypt = require('bcrypt');
+const User = require('../model/user');
 const jwt = require('jsonwebtoken');
-const Authentication = require('../middleware/middleware')
+const bodyParser = require('body-parser');
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+router.use(bodyParser.urlencoded({ extended: true }));
+router.use(bodyParser.json());
 
-// Your route handling code here
-
-
-
-router.post("/register",async (req, res) => {
-    console.log("register"); 
+router.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
-        return res.send({ error: "Fill Complete details" })
+        return res.status(400).json({ msg: "Please fill all the details", name, email, pass });
     }
-    console.log(name + " " + email + " " + password);
-
-    const encryptedPassword = await bcrypt.hash(password, 10);
     try {
-        console.log(name + " " + email + " " + password);
-
-        const oldUser = await User.findOne({ email });
-
-        
-        if (oldUser) {
-            return res.json({ error: "User Exists" });
+        const pre_exist = await User.findOne({ email  });
+        if (pre_exist) {
+            return res.status(400).send("User already exists");
         }
-        const response = await User.create({
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = await User.create({
             name,
             email,
-            password: encryptedPassword
+            password: hashedPassword, 
         });
-        return res.json({ success: "User Registered Successfully" });
-        // res.send({ status: "Data Save Succesfully" });
+
+        return res.json({ data: "Registered Successfully!" });
     } catch (error) {
-        res.status(400).send({ message: error });
+        return res.status(500).json({ data: "Error occurred while registering user", error });
     }
 });
-  
 
-router.post("/login",async (req, res) => {
-    console.log("login");
+
+router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
-    console.log(email + " " + password);
-
-    const user = await User.findOne({ email });
-    if (!user) {
-        return res.json({ error: "User Not found" });
-    }
-    console.log(user);
-    if (await bcrypt.compare(password, user.password)) {
-        console.log(user);
-        const token = jwt.sign({email: user.email,name: user.name, id:user._id}, process.env.JWT_SECRET)
-        if (res.status(201)) {
-            return res.json({ status: "ok", message: "Login Successfully", data: token, user:user });
-        } else {
-            return res.json({ error: "error" });
+    try {
+        const exist = await User.findOne({ email });
+        if (!exist) {
+            console.log("User does not exist");
+            return res.status(400).send("User does not exist");
         }
+
+        const match = await bcrypt.compare(password, exist.password);
+        if (!match) {
+            console.log("Password does not match");
+            return res.status(400).send("Password does not match"); 
+        }
+
+        const token = jwt.sign({ email: exist.email, name: exist.name, pic: exist.pic }, process.env.JWT_SECRET);
+        console.log("Login successful");
+        return res.send({
+            msg: "Login Successfully",
+            data: token
+        });
+    } catch (error) {
+        console.error("Error:", error);
+        return res.status(500).json({
+            status: "error",
+            msg: "An error occurred while login" 
+        });
     }
-    res.json({ status: "error", error: "Invalid Authentication" });
-});
-
-
-router.get("/allUsers",Authentication,async(req,res)=>{
-    console.log('inside allusers');
-
-    try{
-        const allUsers = await User.find();
-        if(!allUsers || allUsers.length===0) return res.status(400).json({message: 'user not found'});
-        console.log(allUsers);
-        return res.status(200).json(allUsers);
-    }catch(error){
-        res.status(400).json({message:"error in the allusers api"+error})
-    }
-
 });
 
 router.post('/send_request', async (req, res) => {
@@ -115,7 +96,7 @@ router.post('/accept_request', async(req, res) => {
         sender.friend_list.push(recId);
 
         receiver.friend_request.pull(senderId);
-        
+
         await receiver.save();
         await sender.save();
 
@@ -136,7 +117,7 @@ router.post('/delete_request', async(req, res) => {
         }
 
         receiver.friend_request.pull(senderId);
-        
+
         await receiver.save();
 
         res.status(200).send("Friend request deleted successfully!");
@@ -155,10 +136,10 @@ router.post('/unfriend', async(req, res) => {
         if (!receiver || !sender) {
             return res.status(404).send("One or more users not found!");
         }
-        
+
         sender.friend_list.pull(recId);
         receiver.friend_list.pull(senderId);
-        
+
         await receiver.save();
         await sender.save();
 
@@ -168,15 +149,6 @@ router.post('/unfriend', async(req, res) => {
         res.status(500).send("Internal server error");
     }
 });
-
-
-
-
-
-
-
-
-
 
 
 module.exports = router;
