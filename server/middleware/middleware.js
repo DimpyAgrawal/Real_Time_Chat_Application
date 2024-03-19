@@ -1,9 +1,19 @@
 const jwt = require('jsonwebtoken');
 const User = require('../model/user');
+const express = require('express');
+const app = express();
+const router  = express.Router();
+
+const bodyParser = require('body-parser');
+
+router.use(bodyParser.urlencoded({ extended: true }));
+router.use(bodyParser.json());
+
+
 
 const authenticateToken = async(req,res,next)=>{
     const authHeader = req.headers.authorization;
-    // console.log(authHeader);
+    console.log(req.headers);
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ error: 'No token provided' });

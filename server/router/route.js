@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const User = require('../model/user');
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
+const Authentication = require('../middleware/middleware')
 
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(bodyParser.json());
@@ -49,7 +50,7 @@ router.post('/login', async (req, res) => {
             console.log("User does not exist");
             return res.status(400).send("User does not exist");
         }
-
+74
         const match = await bcrypt.compare(password, exist.password);
         if (!match) {
             console.log("Password does not match");
@@ -80,6 +81,9 @@ router.post('/send_request', async (req, res) => {
         if (!receiver || !sender) {
             return res.status(404).send("One or more users not found!");
         }
+        if (receiver.friend_request.includes(senderId)) {
+            return res.status(404).send("Friend request already sent by this sender.");
+        }
         receiver.friend_request.push(senderId);
         await receiver.save();
 
@@ -99,6 +103,9 @@ router.post('/accept_request', async(req, res) => {
         if (!receiver || !sender) {
             return res.status(404).send("One or more users not found!");
         }
+        if(receiver.friend_list.includes(senderId) && sender.friend_list.includes(recId)){
+            return res.status(404).send("already friend");
+        }
         receiver.friend_list.push(senderId);
         sender.friend_list.push(recId);
 
@@ -114,7 +121,7 @@ router.post('/accept_request', async(req, res) => {
     }
 });
 
-router.post('/delete_request', async(req, res) => {
+router.post('/delete_request',async(req, res) => {
     const { recId, senderId } = req.body;
     try {
         const receiver = await User.findOne({ _id: recId });
