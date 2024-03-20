@@ -1,5 +1,5 @@
 import React from 'react'
-<<<<<<< HEAD
+
 // import {useHistory} from 'react-router-dom';
 
 export default function Home() {
@@ -17,17 +17,11 @@ export default function Home() {
 
   // },[history])
 
-=======
-import Sidebar from './Sidebar'
-import ChatSide from './ChatSide'
 
-const Home = () => {
->>>>>>> 9a0e0ff990ac5891e0a544aa44c88e5e6e4dd832
   return (
     <div>
-       <Sidebar></Sidebar>
+       
     </div>
   )
 }
 
-export default Home

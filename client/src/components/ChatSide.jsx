@@ -45,7 +45,7 @@ const [clickedData, setClickedData] = useState({});
   };
   return (
     <div>
-      <div className="fixed top-0 left-20 w-40 h-full border-r border-gray-500 bg-violet-50 space-y-8 sm:w-[15rem]">
+      <div className="fixed top-[18.5%] left-20 w-40 h-full border-r border-gray-500 bg-violet-50 space-y-8 sm:w-[15rem]">
     
     <div className="p-3 text-xl">
       <div className="space-y-3 mb-2">Chats</div>

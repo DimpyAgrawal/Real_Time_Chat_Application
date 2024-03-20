@@ -31,7 +31,7 @@ router.get("/accessChat/:userId", Authentication, async (req, res) => {
 
         console.log(isChat);
         if (isChat.length > 0) {
-            isChat = await User.populate(isChat[0], {             //[0] because with these two users ony one caht array will exist
+            isChat = await User.populate(isChat[0], {             //[0] because with these two users ony one chat array will exist
                 path: "lastestMessage.sender",
                 select: "name pic email",
             });
