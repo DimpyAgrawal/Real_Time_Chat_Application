@@ -13,7 +13,7 @@ export default function App() {
   return (
     <>
       <BrowserRouter>
-        {/* <Navbar /> */}
+        <Navbar />
 
         <Routes>
           <Route exact path='/' element={<Landing_page />} />
