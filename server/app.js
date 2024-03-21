@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const app = express();
 const path = require('path');
+// const setUpSocket = require('./socket/socket');
 
 require('./model/chat');
 require('./model/message');
@@ -13,6 +14,7 @@ const router =  require('./router/route');
 
 const chatRoutes = require('./router/chatRoutes');
 const messageRoutes = require('./router/messageRoutes');
+const conversationRoutes = require('./router/conversationRoutes');
 
 
 dotenv.config();
@@ -46,11 +48,14 @@ mongoose.connect(`mongodb+srv://dimpy:${process.env.DB_PASSWORD}@cluster0.glj568
 app.use('/',router);
 app.use('/chats',chatRoutes);
 app.use('/message',messageRoutes);
+app.use('/conversation',conversationRoutes);
  
 const server = app.listen(port,()=>{
     console.log(`server is running on port ${port}`);
    
 })
+
+// setUpSocket(server);
 
 
 

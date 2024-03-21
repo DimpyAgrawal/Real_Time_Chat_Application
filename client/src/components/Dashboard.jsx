@@ -17,6 +17,11 @@ export default function Dashboard() {
     const [sidebar,setSideBar] = useState(false);
     const [groupChat , setGroupChat] = useState(false);
     const navigate = useNavigate();
+    const user = { // Assuming you have user information available
+        name: 'Dimpy',
+        email: 'dimpy.com',
+        pic: 'https://play-lh.googleusercontent.com/C9CAt9tZr8SSi4zKCxhQc9v4I6AOTqRmnLchsu1wVDQL0gsQ3fmbCVgQmOVM1zPru8UH=w240-h480-rw'
+      };
 
     const handleSelectChange = (event) => {
         const value = event.target.value;
@@ -108,7 +113,7 @@ export default function Dashboard() {
                                 <option value="saab">Logout</option>
                             </select>
                          
-                            {showProfile && <ProfilePage setShowProfile={setShowProfile}  />} 
+                            {showProfile && <ProfilePage setShowProfile={setShowProfile} user={user} />}
                         </div>
 
                     </div>

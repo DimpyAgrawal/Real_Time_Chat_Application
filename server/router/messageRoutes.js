@@ -1,9 +1,7 @@
 const express = require('express');
 const app = express();
 const router = express.Router();
-const bcrypt = require('bcrypt');
 const User = require('../model/user');
-const jwt = require('jsonwebtoken');
 const Chat = require('../model/chat');
 const Authentication = require('../middleware/middleware')
 const Message = require('../model/message')
@@ -64,6 +62,41 @@ router.get("/allMessages/:chatId",Authentication,async(req,res)=>{
 
 })
 
+
+
+
+////////////////////////////////////////////////////////////////////////////
+// second video
+
+
+//add
+
+router.post('/', async (req, res) => {
+    const { conversationId, sender, text } = req.body; // Destructure required fields from request body
+    console.log(conversationId, sender, text);
+    try {
+        const newMessage = new Message({ conversationId, sender, text });
+        const savedMessage = await newMessage.save();
+        console.log(" herer ",savedMessage);
+        res.status(200).json(savedMessage);
+    } catch (error) {
+        res.status(400).json(error);
+    }
+});
+
+//get
+
+router.get('/:userId',async(req,res)=>{
+    const{userId} = req.params;
+    try{
+        console.log('inside messages api');
+        const userData = await Message.find({conversationId:userId});
+        res.status(200).json(userData);
+    }catch(error){
+        res.status(400).json(error);
+
+    }
+})
 
 
 
