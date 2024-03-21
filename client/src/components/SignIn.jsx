@@ -31,8 +31,9 @@ export default function SignIn() {
 
     axios.post('http://localhost:8080/login', userData)
       .then(response => {
-        console.log(response.data);
+        // console.log(response.data);
         const { name, email, id } = jwt_decode(response.data.data);
+        // console.log("signin id"+ name+""+id);
         localStorage.setItem('token', response.data.data);
         localStorage.setItem('id', id);
         localStorage.setItem('name', name);
