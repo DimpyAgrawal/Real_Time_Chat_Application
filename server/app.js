@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const app = express();
 const path = require('path');
-// const setUpSocket = require('./socket/socket');
+const setUpSocket = require('./socket/socket');
 
 require('./model/chat');
 require('./model/message');
@@ -55,7 +55,7 @@ const server = app.listen(port,()=>{
    
 })
 
-// setUpSocket(server);
+setUpSocket(server);
 
 
 

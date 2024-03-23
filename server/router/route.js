@@ -177,7 +177,7 @@ router.get("/allUsers", async(req,res)=>{
     try{
         console.log('inside allusers backend');
         const users = await User.find();
-        console.log(users);
+        // console.log(users);
         res.status(200).json(users);
 
     }catch(error){
