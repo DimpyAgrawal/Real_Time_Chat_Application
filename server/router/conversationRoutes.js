@@ -8,10 +8,10 @@ const Conversation = require('../model/conversation');
 
 router.post('/',async(req,res)=>{
     const {senderId,receiverId} = req.body;
-    const newConversation = new Conversation({
-        members:[senderId,receiverId]
-    })
     try{
+        const newConversation = new Conversation({
+            members:[senderId,receiverId]
+        });
         const savedConversation = await newConversation.save();
         res.status(200).json(savedConversation);
 
@@ -24,12 +24,14 @@ router.post('/',async(req,res)=>{
 
 router.get('/:userId',async(req,res)=>{
     const{userId} = req.params;
+    console.log(userId);
 
     try{
 
         const userData = await Conversation.find({
             members :{$in:[userId]},
         });
+        console.log(userData);
         res.status(200).json(userData);
 
     }catch(error){
@@ -37,6 +39,31 @@ router.get('/:userId',async(req,res)=>{
     }
 })
 
+
+//get conversation includes two userId
+
+router.get("/find/:firstUserId/:secondUserId", async (req, res) => {
+    const { firstUserId, secondUserId } = req.params;
+    console.log(firstUserId, secondUserId);
+    try {
+        let conversation = await Conversation.findOne({
+            members: { $all: [firstUserId, secondUserId] },
+        });
+
+        if (!conversation) {
+            console.log("No existing conversation found, creating a new conversation");
+            const newConversation = new Conversation({
+                members: [firstUserId, secondUserId]
+            });
+            conversation = await newConversation.save();
+        }
+        console.log(conversation._id);
+        res.status(200).json(conversation);
+
+    } catch (error) {
+        res.status(400).json(error);
+    }
+});
 
 
 

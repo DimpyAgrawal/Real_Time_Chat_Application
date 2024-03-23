@@ -72,9 +72,11 @@ router.get("/allMessages/:chatId",Authentication,async(req,res)=>{
 //add
 
 router.post('/', async (req, res) => {
-    const { conversationId, sender, text } = req.body; // Destructure required fields from request body
+    console.log('indide message api');
+    const { conversationId, sender, text } = req.body; 
     console.log(conversationId, sender, text);
     try {
+        
         const newMessage = new Message({ conversationId, sender, text });
         const savedMessage = await newMessage.save();
         console.log(" herer ",savedMessage);
@@ -86,24 +88,20 @@ router.post('/', async (req, res) => {
 
 //get
 
-router.get('/:userId',async(req,res)=>{
-    const{userId} = req.params;
+router.get('/:conversationId',async(req,res)=>{
+    const{conversationId} = req.params;
+
     try{
         console.log('inside messages api');
-        const userData = await Message.find({conversationId:userId});
+        console.log(conversationId);
+        const userData = await Message.find({conversationId:conversationId});
+        console.log(userData._id);
         res.status(200).json(userData);
     }catch(error){
         res.status(400).json(error);
 
     }
 })
-
-
-
-
-
-
-
 
 
 
