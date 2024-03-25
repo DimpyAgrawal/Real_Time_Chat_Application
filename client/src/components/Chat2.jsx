@@ -32,10 +32,10 @@ export default function Chat2() {
 
     const getMessages = async () => {
         try {
-            console.log("Inside get messages");
-            console.log(conversationId);
+            // console.log("Inside get messages");
+            // console.log(conversationId);
             const res = await axios.get(`http://localhost:8080/message/${conversationId}`);
-            console.log(res.data);
+            // console.log(res.data);
             setMessages(res.data);
         } catch (error) {
             console.log(error);
@@ -129,10 +129,6 @@ export default function Chat2() {
             setMessages((prev) => [...prev, arrivalMessage]);
     }, [arrivalMessage, currentChat]);
 
-
-
-
-
     useEffect(() => {
         userData();
         getConversationId();
@@ -140,12 +136,13 @@ export default function Chat2() {
 
     }, [currentChat], [messages]);
 
-
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             handlesubmit(e)
         }
     }
+
+    
     return (
         <div className='w-[100vw] h-[89vh] flex' >
             <div className='flex pt-2 pb-2   w-[100vw] h-[5vh]'>

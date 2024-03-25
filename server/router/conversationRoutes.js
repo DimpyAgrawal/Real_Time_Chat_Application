@@ -24,14 +24,14 @@ router.post('/',async(req,res)=>{
 
 router.get('/:userId',async(req,res)=>{
     const{userId} = req.params;
-    console.log(userId);
+    // console.log(userId);
 
     try{
 
         const userData = await Conversation.find({
             members :{$in:[userId]},
         });
-        console.log(userData);
+        // console.log(userData);
         res.status(200).json(userData);
 
     }catch(error){
@@ -51,13 +51,13 @@ router.get("/find/:firstUserId/:secondUserId", async (req, res) => {
         });
 
         if (!conversation) {
-            console.log("No existing conversation found, creating a new conversation");
+            // console.log("No existing conversation found, creating a new conversation");
             const newConversation = new Conversation({
                 members: [firstUserId, secondUserId]
             });
             conversation = await newConversation.save();
         }
-        console.log(conversation._id);
+        // console.log(conversation._id);
         res.status(200).json(conversation);
 
     } catch (error) {
