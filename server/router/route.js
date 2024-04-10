@@ -72,124 +72,102 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.post('/send_request', async (req, res) => {
-    const { recId , senderId } = req.body;
-    console.log(recId, senderId);
-    try {
-        const receiver = await User.findOne({ _id: recId });
-        const sender = await User.findOne({ _id: senderId });
-        if (!receiver || !sender) {
-            return res.status(404).send("One or more users not found!");
-        }
-        if (receiver.friend_request.includes(senderId)) {
-            return res.status(404).send("Friend request already sent by this sender.");
-        }
-        receiver.friend_request.push(senderId);
-        await receiver.save();
-
-        res.status(200).send("Friend request sent successfully!");
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Internal server error");
-    }
-});
 
 
-router.post('/accept_request', async(req, res) => {
-    const { recId, senderId } = req.body;
-    try {
-        const receiver = await User.findOne({ _id: recId });
-        const sender = await User.findOne({ _id: senderId });
-        if (!receiver || !sender) {
-            return res.status(404).send("One or more users not found!");
-        }
-        if(receiver.friend_list.includes(senderId) && sender.friend_list.includes(recId)){
-            return res.status(404).send("already friend");
-        }
-        receiver.friend_list.push(senderId);
-        sender.friend_list.push(recId);
-
-        receiver.friend_request.pull(senderId);
-
-        await receiver.save();
-        await sender.save();
-
-        res.status(200).send("Friend request accepted successfully!");
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Internal server error");
-    }
-});
-
-router.post('/delete_request',async(req, res) => {
-    const { recId, senderId } = req.body;
-    try {
-        const receiver = await User.findOne({ _id: recId });
-        const sender = await User.findOne({ _id: senderId });
-        if (!receiver || !sender) {
-            return res.status(404).send("One or more users not found!");
-        }
-
-        receiver.friend_request.pull(senderId);
-
-        await receiver.save();
-
-        res.status(200).send("Friend request deleted successfully!");
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Internal server error");
-    }
-});
-
-
-router.post('/unfriend', async(req, res) => {
-    const { recId, senderId } = req.body;
-    try {
-        const receiver = await User.findOne({ _id: recId });
-        const sender = await User.findOne({ _id: senderId });
-        if (!receiver || !sender) {
-            return res.status(404).send("One or more users not found!");
-        }
-
-        sender.friend_list.pull(recId);
-        receiver.friend_list.pull(senderId);
-
-        await receiver.save();
-        await sender.save();
-
-        res.status(200).send("Now you both are no longer friends!");
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Internal server error");
-    }
-});
-
-// to get a user
-router.get("/", async (req, res) => {
-    const { userId, userName } = req.query; // Use req.query to access query parameters instead of req.params
-    try {
-        const user = userId
-            ? await User.findById(userId) // Use findById directly with userId
-            : await User.findOne({ name: userName });
-        const { password, updatedAt, ...other } = user._doc;
-        res.status(200).json(other);
-    } catch (error) {
-        res.status(400).json(error);
-    }
-});
-
-// get all users data
-
-router.get("/allUsers", async(req,res)=>{
-    try{
-        console.log('inside allusers backend');
-        const users = await User.find();
-        // console.log(users);
-        res.status(200).json(users);
-
-    }catch(error){
-        res.status(400).json(error);
-    }
+router.get('/alluser' , async(req,res)=>{
+    let user = await User.find();
+    res.send(user);
+    console.log(user);
+    // console.log("send");
 })
+
+router.put('/like/:id', async (req, res) => {
+    try {
+        const cardId = req.params.id;
+        const userId = req.body.id;
+
+        let card = await User.findById(cardId);
+        const user = await User.findById(userId);
+
+        if (!card || !user) {
+            return res.status(404).json({ error: 'card not found' });
+        }
+        console.log(userId+" "+cardId)
+        if (card.likedUser.includes(userId) && user.likedCard.includes(cardId) ) {
+
+            console.log("user: "+ user);
+            user.likedCard = user.likedCard.filter(id => id != cardId);
+            await user.save();
+
+            console.log("user: "+ user);
+            console.log("card: "+ card);
+            card = await User.findById(cardId);
+            console.log("card: "+ card);
+
+            card.likedUser = card.likedUser.filter(id => id != userId);
+            await card.save();
+
+            console.log("after saved: "+ card);
+           
+            return res.json({ msg: "dislike" });
+        }
+       
+
+        card.likedUser.push(userId);
+        user.likedCard.push(cardId);
+        await card.save();
+        await user.save();
+        return res.status(200).json({ msg: "like" });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+router.put('/friend/:id', async (req, res) => {
+    try {
+        const cardId = req.params.id;
+        const userId = req.body.id;
+
+        let card = await User.findById(cardId);
+        const user = await User.findById(userId);
+
+        if (!card || !user) {
+            return res.status(404).json({ error: 'card not found' });
+        }
+        console.log(userId+" "+cardId)
+        if (card.friend.includes(userId) && user.friend.includes(cardId) ) {
+
+            console.log("user: "+ user);
+            user.friend = user.friend.filter(id => id != cardId);
+            await user.save();
+
+            console.log("user: "+ user);
+            console.log("card: "+ card);
+            card = await User.findById(cardId);
+            console.log("card: "+ card);
+
+            card.friend = card.friend.filter(id => id != userId);
+            await card.save();
+
+            console.log("after saved: "+ card);
+           
+            return res.json({ msg: "unfriend" });
+        }
+       
+
+        card.friend.push(userId);
+        user.friend.push(cardId);
+        await card.save();
+        await user.save();
+        return res.status(200).json({ msg: "friend" });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 
 module.exports = router;

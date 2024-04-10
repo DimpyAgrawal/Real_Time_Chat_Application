@@ -9,6 +9,7 @@ import ProfilePage from './components/ProfilePage'
 import { ToastContainer } from 'react-toastify'
 import Landing_page from './components/Landing_page'
 import Chat2 from './components/Chat2'
+import Drag from './components/Drag'
 
 export default function App() {
   return (
@@ -24,10 +25,9 @@ export default function App() {
           <Route exact path='/dashboard' element={<Dashboard />} />
           
           <Route exact path='/chat2' element={<Chat2 />} />
+          <Route exact path = '/drag' element ={<Drag/>}/>
 
-
-          {/* <Route exact path='/profilepage' element={<ProfilePage />} /> */}
-
+        
         </Routes>
       </BrowserRouter>
       <ToastContainer />
