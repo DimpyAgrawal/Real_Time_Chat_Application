@@ -22,13 +22,15 @@ dotenv.config();
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
-app.use(cors({credentials: true}));
+app.use(cors());
 
 const port  = process.env.PORT||8080;
+app.use(cors({
+     origin: 'http://localhost:5173'
+   }));
 
 
-
-mongoose.connect('mongodb://127.0.0.1:27017/Anjali')
+mongoose.connect('mongodb://127.0.0.1:27017/Machify')
 .then(()=>{
      console.log("DB Connected");
 })

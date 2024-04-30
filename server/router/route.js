@@ -5,38 +5,46 @@ const bcrypt = require('bcrypt');
 const User = require('../model/user');
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
+const {v4: uuidv4} = require('uuid');
 const Authentication = require('../middleware/middleware')
 
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(bodyParser.json());
 
-router.post('/register', async (req, res) => {
-    const { name, email, password } = req.body;
-    
-    console.log(name + " " + email + " " + password);
-    if (!name || !email || !password) {
-        return res.send({ error: "Fill Complete details" });
+router.post('/register',async (req,res)=>{
+    const {email,password,confirm_pass}=req.body;
+    if(!email || !password||!confirm_pass){
+        return res.json({ error: "Fill complete details"});
     }
-    const encryptedPassword = await bcrypt.hash(password, 10);
-    try {
-        console.log(name + " " + email + " " + password);
-
-        const oldUser = await User.findOne({ email });
-
-        
-        if (oldUser) {
+    // console.log(email+" "+password+" "+confirm_pass);
+    if ((password!==confirm_pass)){
+      return res.json({ error: "Password needs to match"});
+    }
+    // const encryptedPassword = await bcrypt.hash(password, 10);
+    const generatedUserId=uuidv4()
+    const hashedPassword=await bcrypt.hash(password, 10);
+    try{
+        const oldUser=await User.findOne({email});
+        if (oldUser){
             return res.json({ error: "User Exists" });
         }
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = await User.create({
-            name,
-            email,
-            password: hashedPassword, 
+        const sanitizedEmail=email.toLowerCase();
+        const newUser =new User({
+            user_id: generatedUserId,
+            email: sanitizedEmail,
+            hashed_password: hashedPassword
         });
-
-        return res.json({ data: "Registered Successfully!" });
-    } catch (error) {
-        return res.status(500).json({ data: "Error occurred while registering user", error });
+        // console.log(newUser);
+        await newUser.save();
+        const token = jwt.sign({ email: sanitizedEmail, userId: generatedUserId }, process.env.JWT_SECRET, {
+            expiresIn: 60 * 24
+        });
+        // console.log(email + " " +user_id);
+        res.status(201).json({token, userId: generatedUserId})
+    } 
+    catch (error){
+        console.log(error)
+        // return res.status(500).json({ data: "Error occurred while registering user", error });
     }
 });
 
@@ -45,16 +53,17 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const exist = await User.findOne({ email });
+        const exist = await User.findOne({email});
+        // console.log(exist);
         if (!exist) {
             console.log("User does not exist");
-            return res.status(400).send("User does not exist");
+            return res.send({error:"Please signup first:user not exist"});
         }
-74
-        const match = await bcrypt.compare(password, exist.password);
+
+        const match = await bcrypt.compare(password, exist.hashed_password);
         if (!match) {
-            console.log("Password does not match");
-            return res.status(400).send("Password does not match"); 
+            // console.log({error:"Password does not match"});
+            return res.send({error:"Wrong credentials"}); 
         }
 
         const token = jwt.sign({ email: exist.email, name: exist.name, pic: exist.pic ,id:exist._id}, process.env.JWT_SECRET);
@@ -71,9 +80,21 @@ router.post('/login', async (req, res) => {
         });
     }
 });
-
-
-
+    router.put('/user', async (req, res) => {
+        const user_id = req.body.userId;
+        try {
+            const updatedUserData = req.body;
+            // const exist = await User.findOne({user_id});
+            // console.log(exist);
+            // console.log(updatedUserData);
+            const updatedUser = await User.updateOne({ user_id }, updatedUserData);
+            res.json(updatedUser);
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: 'Server Error' });
+        }
+    });
+    
 router.get('/alluser' , async(req,res)=>{
     let user = await User.find();
     res.send(user);

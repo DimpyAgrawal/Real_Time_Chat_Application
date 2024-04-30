@@ -27,7 +27,7 @@ export default function SignUp() {
       notify2("Please fill in all the details");
       return;
     }
-    axios.post('http://localhost:8080/register', userData)
+    axios.post('http://localhost:8080/regi', userData)
       .then(response => {
         console.log(response.data);
         notify1();
