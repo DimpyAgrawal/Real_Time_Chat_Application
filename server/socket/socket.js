@@ -18,16 +18,16 @@ const removedUser = (socketId) => {
 };
 
 const getUser = (userId) => {
-    // console.log("get User id",userId);
+    console.log("get User id",userId);
     const matchingUsers = users.filter(user=>user.userId === userId);
-        // console.log("get User id2",matchingUsers);
+        console.log("get User id2",matchingUsers);
     return matchingUsers.length>0 ? matchingUsers[0].socketId:null;
     
 };
 
 
 const sendMessageToUser = async ({ senderId, recieverId, text }) => {
-    // console.log("sendMessageToUser ",senderId, recieverId, text);
+    console.log("sendMessageToUser ",senderId, recieverId, text);
     const SocketIdUser = getUser(recieverId);
     if (SocketIdUser) {
         console.log("sendMessageToUser inside if ",SocketIdUser);
@@ -55,7 +55,7 @@ function setUpSocket(server) {
 
         //take userId and socketId from user
         socket.on("addUser", (userId) => {
-            // console.log(" inside add user  user_id  "+ userId, "socket_id"+socket.id);
+            console.log(" inside add user  user_id  "+ userId, "socket_id"+socket.id);
             addUser(userId, socket.id);
             console.log(users);
             io.emit("getUsers", users); //server to client
