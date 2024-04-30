@@ -10,6 +10,14 @@ import { ToastContainer } from 'react-toastify'
 import Landing_page from './components/Landing_page'
 import Chat2 from './components/Chat2'
 import Drag from './components/Drag'
+import Landing from './pages/Landing'
+import Account from './pages/Account'
+import Signup from './pages/Signup'
+import Homee from './pages/Homee'
+import Login from './pages/Login'
+import PrivateRoute from './pages/PrivateRoute';
+import { AuthProvider } from './pages/AuthContext'
+
 
 export default function App() {
   return (
@@ -32,10 +40,9 @@ export default function App() {
           
           
           <Route exact path='/chat2' element={<Chat2 />} />
+          <Route exact path = '/drag' element ={<Drag/>}/>
 
-
-          {/* <Route exact path='/profilepage' element={<ProfilePage />} /> */}
-
+        
         </Routes>
       </BrowserRouter>
       <ToastContainer />
