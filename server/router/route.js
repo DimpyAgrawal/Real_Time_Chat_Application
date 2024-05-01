@@ -95,12 +95,6 @@ router.post('/login', async (req, res) => {
         }
     });
     
-router.get('/alluser' , async(req,res)=>{
-    let user = await User.find();
-    res.send(user);
-    console.log(user);
-    // console.log("send");
-})
 
 router.put('/like/:id', async (req, res) => {
     try {
