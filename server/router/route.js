@@ -186,7 +186,36 @@ router.put('/friend/:id', async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).send("Internal server error");
+    }
+});
+
+// to get a user
+router.get("/", async (req, res) => {
+    const { userId, userName } = req.query; // Use req.query to access query parameters instead of req.params
+    try {
+        const user = userId
+            ? await User.findById(userId) // Use findById directly with userId
+            : await User.findOne({ name: userName });
+        const { password, updatedAt, ...other } = user._doc;
+        res.status(200).json(other);
+    } catch (error) {
+        res.status(400).json(error);
+    }
+});
+
+// get all users data
+
+router.get("/allUsers", async(req,res)=>{
+    try{
+        console.log('inside allusers backend');
+        const users = await User.find();
+        // console.log(users);
+        //new changes
+        res.status(200).json(users);
+
+    }catch(error){
+        res.status(400).json(error);
     }
 });
 
