@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const Chat = require('../model/chat');
 const Authentication = require('../middleware/middleware')
 const message = require('../model/message')
-
+//added random comment
 //accessing one on one chat
 
 router.get("/accessChat/:userId", Authentication, async (req, res) => {
