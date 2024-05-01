@@ -5,37 +5,46 @@ const bcrypt = require('bcrypt');
 const User = require('../model/user');
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
+const {v4: uuidv4} = require('uuid');
+const Authentication = require('../middleware/middleware')
 
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(bodyParser.json());
 
-router.post('/register', async (req, res) => {
-    const { name, email, password } = req.body;
-    
-    console.log(name + " " + email + " " + password);
-    if (!name || !email || !password) {
-        return res.send({ error: "Fill Complete details" });
+router.post('/register',async (req,res)=>{
+    const {email,password,confirm_pass}=req.body;
+    if(!email || !password||!confirm_pass){
+        return res.json({ error: "Fill complete details"});
     }
-    const encryptedPassword = await bcrypt.hash(password, 10);
-    try {
-        console.log(name + " " + email + " " + password);
-
-        const oldUser = await User.findOne({ email });
-
-        
-        if (oldUser) {
+    // console.log(email+" "+password+" "+confirm_pass);
+    if ((password!==confirm_pass)){
+      return res.json({ error: "Password needs to match"});
+    }
+    // const encryptedPassword = await bcrypt.hash(password, 10);
+    const generatedUserId=uuidv4()
+    const hashedPassword=await bcrypt.hash(password, 10);
+    try{
+        const oldUser=await User.findOne({email});
+        if (oldUser){
             return res.json({ error: "User Exists" });
         }
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = await User.create({
-            name,
-            email,
-            password: hashedPassword, 
+        const sanitizedEmail=email.toLowerCase();
+        const newUser =new User({
+            user_id: generatedUserId,
+            email: sanitizedEmail,
+            hashed_password: hashedPassword
         });
-
-        return res.json({ data: "Registered Successfully!" });
-    } catch (error) {
-        return res.status(500).json({ data: "Error occurred while registering user", error });
+        // console.log(newUser);
+        await newUser.save();
+        const token = jwt.sign({ email: sanitizedEmail, userId: generatedUserId }, process.env.JWT_SECRET, {
+            expiresIn: 60 * 24
+        });
+        // console.log(email + " " +user_id);
+        res.status(201).json({token, userId: generatedUserId})
+    } 
+    catch (error){
+        console.log(error)
+        // return res.status(500).json({ data: "Error occurred while registering user", error });
     }
 });
 
@@ -44,16 +53,17 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const exist = await User.findOne({ email });
+        const exist = await User.findOne({email});
+        // console.log(exist);
         if (!exist) {
             console.log("User does not exist");
-            return res.status(400).send("User does not exist");
+            return res.send({error:"Please signup first:user not exist"});
         }
 
-        const match = await bcrypt.compare(password, exist.password);
+        const match = await bcrypt.compare(password, exist.hashed_password);
         if (!match) {
-            console.log("Password does not match");
-            return res.status(400).send("Password does not match"); 
+            // console.log({error:"Password does not match"});
+            return res.send({error:"Wrong credentials"}); 
         }
 
         const token = jwt.sign({ email: exist.email, name: exist.name, pic: exist.pic ,id:exist._id}, process.env.JWT_SECRET);
@@ -70,119 +80,115 @@ router.post('/login', async (req, res) => {
         });
     }
 });
-
-router.post('/send_request', async (req, res) => {
-    const { recId , senderId } = req.body;
-    console.log(recId, senderId);
-    try {
-        const receiver = await User.findOne({ _id: recId });
-        const sender = await User.findOne({ _id: senderId });
-        if (!receiver || !sender) {
-            return res.status(404).send("One or more users not found!");
+    router.put('/user', async (req, res) => {
+        const user_id = req.body.userId;
+        try {
+            const updatedUserData = req.body;
+            // const exist = await User.findOne({user_id});
+            // console.log(exist);
+            // console.log(updatedUserData);
+            const updatedUser = await User.updateOne({ user_id }, updatedUserData);
+            res.json(updatedUser);
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: 'Server Error' });
         }
-        receiver.friend_request.push(senderId);
-        await receiver.save();
-
-        res.status(200).send("Friend request sent successfully!");
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Internal server error");
-    }
-});
-
-
-router.post('/accept_request', async(req, res) => {
-    const { recId, senderId } = req.body;
-    try {
-        const receiver = await User.findOne({ _id: recId });
-        const sender = await User.findOne({ _id: senderId });
-        if (!receiver || !sender) {
-            return res.status(404).send("One or more users not found!");
-        }
-        receiver.friend_list.push(senderId);
-        sender.friend_list.push(recId);
-
-        receiver.friend_request.pull(senderId);
-
-        await receiver.save();
-        await sender.save();
-
-        res.status(200).send("Friend request accepted successfully!");
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Internal server error");
-    }
-});
-
-router.post('/delete_request', async(req, res) => {
-    const { recId, senderId } = req.body;
-    try {
-        const receiver = await User.findOne({ _id: recId });
-        const sender = await User.findOne({ _id: senderId });
-        if (!receiver || !sender) {
-            return res.status(404).send("One or more users not found!");
-        }
-
-        receiver.friend_request.pull(senderId);
-
-        await receiver.save();
-
-        res.status(200).send("Friend request deleted successfully!");
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Internal server error");
-    }
-});
-
-
-router.post('/unfriend', async(req, res) => {
-    const { recId, senderId } = req.body;
-    try {
-        const receiver = await User.findOne({ _id: recId });
-        const sender = await User.findOne({ _id: senderId });
-        if (!receiver || !sender) {
-            return res.status(404).send("One or more users not found!");
-        }
-
-        sender.friend_list.pull(recId);
-        receiver.friend_list.pull(senderId);
-
-        await receiver.save();
-        await sender.save();
-
-        res.status(200).send("Now you both are no longer friends!");
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Internal server error");
-    }
-});
-
-// to get a user
-router.get("/", async (req, res) => {
-    const { userId, userName } = req.query; // Use req.query to access query parameters instead of req.params
-    try {
-        const user = userId
-            ? await User.findById(userId) // Use findById directly with userId
-            : await User.findOne({ name: userName });
-        const { password, updatedAt, ...other } = user._doc;
-        res.status(200).json(other);
-    } catch (error) {
-        res.status(400).json(error);
-    }
-});
-
-// get all users data
-
-router.get("/allUsers", async(req,res)=>{
-    try{
-        console.log('inside allusers backend');
-        const users = await User.find();
-        // console.log(users);
-        res.status(200).json(users);
-
-    }catch(error){
-        res.status(400).json(error);
-    }
+    });
+    
+router.get('/alluser' , async(req,res)=>{
+    let user = await User.find();
+    res.send(user);
+    console.log(user);
+    // console.log("send");
 })
+
+router.put('/like/:id', async (req, res) => {
+    try {
+        const cardId = req.params.id;
+        const userId = req.body.id;
+
+        let card = await User.findById(cardId);
+        const user = await User.findById(userId);
+
+        if (!card || !user) {
+            return res.status(404).json({ error: 'card not found' });
+        }
+        console.log(userId+" "+cardId)
+        if (card.likedUser.includes(userId) && user.likedCard.includes(cardId) ) {
+
+            console.log("user: "+ user);
+            user.likedCard = user.likedCard.filter(id => id != cardId);
+            await user.save();
+
+            console.log("user: "+ user);
+            console.log("card: "+ card);
+            card = await User.findById(cardId);
+            console.log("card: "+ card);
+
+            card.likedUser = card.likedUser.filter(id => id != userId);
+            await card.save();
+
+            console.log("after saved: "+ card);
+           
+            return res.json({ msg: "dislike" });
+        }
+       
+
+        card.likedUser.push(userId);
+        user.likedCard.push(cardId);
+        await card.save();
+        await user.save();
+        return res.status(200).json({ msg: "like" });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+router.put('/friend/:id', async (req, res) => {
+    try {
+        const cardId = req.params.id;
+        const userId = req.body.id;
+
+        let card = await User.findById(cardId);
+        const user = await User.findById(userId);
+
+        if (!card || !user) {
+            return res.status(404).json({ error: 'card not found' });
+        }
+        console.log(userId+" "+cardId)
+        if (card.friend.includes(userId) && user.friend.includes(cardId) ) {
+
+            console.log("user: "+ user);
+            user.friend = user.friend.filter(id => id != cardId);
+            await user.save();
+
+            console.log("user: "+ user);
+            console.log("card: "+ card);
+            card = await User.findById(cardId);
+            console.log("card: "+ card);
+
+            card.friend = card.friend.filter(id => id != userId);
+            await card.save();
+
+            console.log("after saved: "+ card);
+           
+            return res.json({ msg: "unfriend" });
+        }
+       
+
+        card.friend.push(userId);
+        user.friend.push(cardId);
+        await card.save();
+        await user.save();
+        return res.status(200).json({ msg: "friend" });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 
 module.exports = router;
